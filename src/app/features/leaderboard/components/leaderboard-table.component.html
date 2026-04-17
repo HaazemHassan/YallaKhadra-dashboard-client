@@ -1,0 +1,54 @@
+<section class="glass-card rounded-xl">
+  <header class="border-b border-border px-5 py-4">
+    <h2 class="flex items-center gap-2 text-base font-semibold">
+      <svg viewBox="0 0 24 24" class="h-5 w-5 fill-primary" focusable="false" aria-hidden="true">
+        <path
+          d="M17 3h3v3h-3V3Zm-6 4h3v3h-3V7ZM5 11h3v3H5v-3Zm12-1h3v3h-3v-3Zm-6 4h3v3h-3v-3Zm-6 4h3v3H5v-3Zm6 0h3v3h-3v-3Zm6 0h3v3h-3v-3Z">
+        </path>
+      </svg>
+      Full Rankings
+    </h2>
+  </header>
+
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead>
+        <tr class="border-b border-border">
+          <th class="px-4 py-3 text-left font-medium text-muted-foreground w-20">Rank</th>
+          <th class="px-4 py-3 text-left font-medium text-muted-foreground">User</th>
+          <th class="px-4 py-3 text-right font-medium text-muted-foreground">Reports</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (user of rows; track user.userId) {
+        <tr class="border-b border-border last:border-0"
+          [ngClass]="user.rank <= 3 ? 'bg-primary/5' : 'hover:bg-muted/50'">
+          <td class="px-4 py-3 font-bold">
+            <span class="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs"
+              [ngClass]="getRankBadgeClass(user.rank)">
+              {{ user.rank }}
+            </span>
+          </td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="h-8 w-8 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">
+                {{ getInitials(user.fullName) }}
+              </div>
+              <span class="font-medium">{{ user.fullName }}</span>
+            </div>
+          </td>
+          <td class="px-4 py-3 text-right font-bold text-primary">{{ user.totalReportsCount }}</td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="3" class="px-4 py-6 text-center text-sm text-muted-foreground">
+            No leaderboard data available for this period.
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

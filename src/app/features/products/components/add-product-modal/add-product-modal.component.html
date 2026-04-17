@@ -1,0 +1,121 @@
+@if (open) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" (click)="closeModal()" role="button"
+  tabindex="0">
+  <section class="w-full max-w-2xl rounded-xl border border-border bg-card p-5 shadow-xl"
+    (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Add Product">
+    <header class="mb-4 flex items-center justify-between gap-3">
+      <h3 class="text-lg font-semibold">Add Product</h3>
+      <button type="button" (click)="closeModal()"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        aria-label="Close">
+        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+          <path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6L19 6.4 17.6 5 12 10.6 6.4 5Z">
+          </path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="grid grid-cols-1 gap-4 py-2 sm:grid-cols-2">
+      <div class="space-y-2">
+        <label for="add-product-name" class="text-sm font-medium">Name</label>
+        <input id="add-product-name" type="text" [(ngModel)]="formName" placeholder="Product name"
+          class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" />
+        @if (formErrors.name) {
+        <p class="text-xs text-red-600">{{ formErrors.name }}</p>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label for="add-product-category" class="text-sm font-medium">Category</label>
+        <select id="add-product-category" [(ngModel)]="formCategoryId"
+          class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20">
+          <option value="">Select category</option>
+          @for (category of categories; track category) {
+          <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        @if (formErrors.category) {
+        <p class="text-xs text-red-600">{{ formErrors.category }}</p>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label for="add-product-points" class="text-sm font-medium">Points Cost</label>
+        <input id="add-product-points" type="number" [(ngModel)]="formPointsCost" placeholder="100"
+          class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" />
+        @if (formErrors.pointsCost) {
+        <p class="text-xs text-red-600">{{ formErrors.pointsCost }}</p>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label for="add-product-stock" class="text-sm font-medium">Stock</label>
+        <input id="add-product-stock" type="number" [(ngModel)]="formStock" placeholder="50"
+          class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" />
+        @if (formErrors.stock) {
+        <p class="text-xs text-red-600">{{ formErrors.stock }}</p>
+        }
+      </div>
+
+      <div class="space-y-2 sm:col-span-2">
+        <label for="add-product-description" class="text-sm font-medium">Description</label>
+        <textarea id="add-product-description" [(ngModel)]="formDescription" rows="3" placeholder="Product description"
+          class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"></textarea>
+        @if (formErrors.description) {
+        <p class="text-xs text-red-600">{{ formErrors.description }}</p>
+        }
+      </div>
+
+      <div class="space-y-2 sm:col-span-2">
+        <label for="add-product-images" class="text-sm font-medium">Images</label>
+        <div class="cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors" [ngClass]="
+            dragOver
+              ? 'border-primary bg-primary/5'
+              : 'border-muted-foreground/25 hover:border-primary/50'
+          " (dragover)="onDragOver($event)" (dragleave)="onDragLeave()" (drop)="onDrop($event)"
+          (click)="addProductImagesInput.click()">
+          <svg viewBox="0 0 24 24" class="mx-auto mb-2 h-8 w-8 fill-muted-foreground" focusable="false"
+            aria-hidden="true">
+            <path d="M11 3h2v8h3l-4 5-4-5h3V3Zm-6 14h14v2H5v-2Z"></path>
+          </svg>
+          <p class="text-sm text-muted-foreground">Drag and drop images or click to browse</p>
+          <input #addProductImagesInput id="add-product-images" type="file" accept="image/*" multiple class="hidden"
+            (change)="onFileInputChange($event)" />
+        </div>
+        <p class="text-xs text-muted-foreground">Exactly 3 images are required.</p>
+        @if (formErrors.images) {
+        <p class="text-xs text-red-600">{{ formErrors.images }}</p>
+        }
+
+        @if (previewImages.length > 0) {
+        <div class="mt-2 flex flex-wrap gap-2">
+          @for (image of previewImages; track image; let i = $index) {
+          <div class="relative h-16 w-16 overflow-hidden rounded-lg border border-border">
+            <img [src]="image" class="h-full w-full object-cover" alt="Preview image" />
+            <button type="button" (click)="removeImage(i)"
+              class="absolute right-0 top-0 rounded-bl-md bg-destructive p-1 text-destructive-foreground">
+              <svg viewBox="0 0 24 24" class="h-3 w-3 fill-current" focusable="false" aria-hidden="true">
+                <path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h2v9H7V9Zm4 0h2v9h-2V9Zm4 0h2v9h-2V9Z"></path>
+              </svg>
+            </button>
+          </div>
+          }
+        </div>
+        }
+      </div>
+    </div>
+
+    <footer class="mt-5 flex justify-end gap-2">
+      <button type="button" (click)="closeModal()"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 text-sm font-medium transition hover:bg-muted">
+        Cancel
+      </button>
+
+      <button type="button" (click)="submit()"
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:brightness-105">
+        Add
+      </button>
+    </footer>
+  </section>
+</div>
+}

@@ -1,0 +1,133 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">Categories</h1>
+    <p class="text-muted-foreground">Manage product categories</p>
+  </div>
+
+  <section class="glass-card rounded-xl">
+    <header class="border-b border-border p-4 sm:p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold">All Categories</h2>
+
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div class="relative">
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path
+                d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.25-1.41 1.41-4.25-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z">
+              </path>
+            </svg>
+
+            <input type="text" placeholder="Search by name..." [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearchTermChange()"
+              class="h-10 w-full rounded-md border border-input bg-background px-9 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 sm:w-60" />
+          </div>
+
+          <button type="button" (click)="openAddModal()"
+            class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:brightness-105">
+            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+              <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"></path>
+            </svg>
+            <span>Add Category</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    @if (loadError) {
+    <div class="border-b border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive sm:px-5">
+      {{ loadError }}
+    </div>
+    }
+
+    <div class="p-4 sm:p-5">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[680px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="px-4 py-3 font-medium text-muted-foreground">Name</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Description</th>
+              <th class="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (isLoading) {
+            <tr>
+              <td colspan="3" class="px-4 py-12 text-center text-muted-foreground">Loading categories...</td>
+            </tr>
+            } @else if (pagedCategories.length === 0) {
+            <tr>
+              <td colspan="3" class="px-4 py-12 text-center text-muted-foreground">No categories found.</td>
+            </tr>
+            } @else {
+            @for (category of pagedCategories; track category.id) {
+            <tr class="border-b border-border transition-colors hover:bg-muted/50 last:border-0">
+              <td class="px-4 py-3 font-medium">{{ category.name }}</td>
+              <td class="px-4 py-3 text-muted-foreground">{{ category.description }}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center justify-end gap-1">
+                  <button type="button" (click)="openEditModal(category)"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    aria-label="Edit category">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                      <path
+                        d="M16.9 3.7a2.9 2.9 0 0 1 4 4L8.7 19.9 3 21l1.1-5.7L16.9 3.7Zm2.6 2.6a.9.9 0 0 0-1.3-1.3l-1.5 1.5 1.3 1.3 1.5-1.5ZM16.6 9l-1.3-1.3-9.4 9.4-.4 2 2-.4L16.6 9Z">
+                      </path>
+                    </svg>
+                  </button>
+
+                  <button type="button" (click)="openDeleteDialog(category)"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-md text-destructive transition hover:bg-destructive/10"
+                    aria-label="Delete category">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                      <path
+                        d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h2v9H7V9Zm4 0h2v9h-2V9Zm4 0h2v9h-2V9ZM6 21a2 2 0 0 1-2-2V8h16v11a2 2 0 0 1-2 2H6Z">
+                      </path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalCount > perPage) {
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-muted-foreground">
+          Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCount }}
+        </p>
+
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="goToPreviousPage()" [disabled]="!canGoPrevious"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Previous
+          </button>
+
+          <button type="button" (click)="goToNextPage()" [disabled]="!canGoNext"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Next
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>
+
+<app-add-category-modal [open]="isAddModalOpen" (close)="closeAddModal()" (save)="handleAddCategory($event)">
+</app-add-category-modal>
+
+<app-edit-category-modal [open]="isEditModalOpen" [category]="editingCategory" (close)="closeEditModal()"
+  (save)="handleUpdateCategory($event)">
+</app-edit-category-modal>
+
+@if (isDeleteDialogOpen) {
+<app-delete-confirmation-modal [label]="deleteModal.label" [message]="deleteModal.message"
+  (cancel)="closeDeleteDialog()" (confirm)="confirmDelete()">
+</app-delete-confirmation-modal>
+}

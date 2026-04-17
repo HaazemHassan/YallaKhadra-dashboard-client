@@ -1,0 +1,65 @@
+@import 'ngx-toastr/toastr';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 120 20% 98%;
+    --foreground: 150 30% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 150 30% 10%;
+
+    --primary: 142 64% 38%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 140 20% 94%;
+    --secondary-foreground: 150 30% 15%;
+
+    --muted: 140 15% 95%;
+    --muted-foreground: 150 10% 45%;
+
+    --accent: 142 50% 92%;
+    --accent-foreground: 142 60% 25%;
+
+    --border: 140 15% 90%;
+    --input: 140 15% 90%;
+    --ring: 142 64% 38%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 150 30% 8%;
+    --sidebar-foreground: 140 15% 85%;
+    --sidebar-primary: 142 64% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 150 25% 14%;
+    --sidebar-accent-foreground: 140 15% 90%;
+    --sidebar-border: 150 20% 16%;
+
+    color-scheme: light;
+  }
+
+  * {
+    @apply border-border;
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    min-height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-card/80 backdrop-blur-sm border border-border shadow-sm;
+  }
+}

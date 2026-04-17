@@ -1,0 +1,134 @@
+<div class="min-h-screen flex w-full bg-background">
+  <aside class="hidden lg:flex lg:w-72 lg:flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
+    <div class="p-4 border-b border-sidebar-border">
+      <a routerLink="/dashboard/home" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-sidebar-primary flex items-center justify-center" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="w-5 h-5 fill-sidebar-primary-foreground" focusable="false">
+            <path
+              d="M12 3.5c3.3 0 6 2.7 6 6 0 5.8-4.8 10.3-6 11.3-1.2-1-6-5.5-6-11.3 0-3.3 2.7-6 6-6Zm0 2a4 4 0 0 0-4 4c0 3.9 2.8 7.2 4 8.5 1.2-1.3 4-4.6 4-8.5a4 4 0 0 0-4-4Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-sidebar-foreground">Yalla Khadra</h1>
+          <p class="text-xs text-sidebar-foreground/60">Smart Waste Management</p>
+        </div>
+      </a>
+    </div>
+
+    <nav class="p-3">
+      <p class="px-2 pb-2 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/60">Pages</p>
+      @for (item of sidebarItems; track item.url) {
+      <a [routerLink]="item.url" routerLinkActive="bg-sidebar-accent text-sidebar-primary"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/85 hover:bg-sidebar-accent/70 transition-colors">
+        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+          <path
+            d="M3 12.5 12 4l9 8.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5Zm2 1v6.5h2.5v-6h9v6H19v-6.5L12 6.8 5 13.5Z">
+          </path>
+        </svg>
+        <span>{{ item.title }}</span>
+      </a>
+      }
+    </nav>
+  </aside>
+
+  <div class="flex-1 flex flex-col min-w-0">
+    <header class="h-16 border-b border-border bg-card flex items-center justify-between px-4 gap-4 shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <button type="button"
+          class="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background hover:bg-muted"
+          (click)="toggleMobileSidebar()" aria-label="Open sidebar">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false">
+            <path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"></path>
+          </svg>
+        </button>
+
+        <div class="relative hidden md:block">
+          <svg viewBox="0 0 24 24" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+            focusable="false" aria-hidden="true">
+            <path
+              d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.25-1.41 1.41-4.25-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z">
+            </path>
+          </svg>
+          <input type="text" placeholder="Search..."
+            class="h-10 w-64 rounded-md border border-transparent bg-muted px-9 text-sm outline-none focus:border-primary" />
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="button"
+          class="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-muted-foreground" focusable="false" aria-hidden="true">
+            <path
+              d="M12 2a6 6 0 0 1 6 6v3.18l1.8 3.6A1 1 0 0 1 18.9 16H5.1a1 1 0 0 1-.9-1.22L6 11.18V8a6 6 0 0 1 6-6Zm0 2a4 4 0 0 0-4 4v3.42L6.72 14h10.56L16 11.42V8a4 4 0 0 0-4-4Zm0 17a3 3 0 0 1-2.82-2h5.64A3 3 0 0 1 12 21Z">
+            </path>
+          </svg>
+          <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
+        </button>
+
+        <div class="flex items-center gap-2">
+          <div
+            class="h-9 w-9 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center"
+            aria-hidden="true">
+            AD
+          </div>
+          <div class="hidden sm:block">
+            <p class="text-sm font-medium leading-tight">Admin</p>
+            <p class="text-xs text-muted-foreground">Super Admin</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-1 p-6 overflow-auto animate-fade-in">
+      <ng-content></ng-content>
+    </main>
+  </div>
+</div>
+
+@if (isMobileSidebarOpen) {
+<div class="fixed inset-0 z-50 bg-black/40 lg:hidden" (click)="closeMobileSidebar()" role="button" tabindex="0">
+  <aside class="h-full w-72 bg-sidebar text-sidebar-foreground border-r border-sidebar-border p-4"
+    (click)="$event.stopPropagation()">
+    <div class="mb-4 flex items-center justify-between">
+      <a routerLink="/dashboard/home" class="flex items-center gap-3" (click)="closeMobileSidebar()">
+        <div class="w-9 h-9 rounded-lg bg-sidebar-primary flex items-center justify-center" aria-hidden="true">
+          <svg viewBox="0 0 24 24" class="w-5 h-5 fill-sidebar-primary-foreground" focusable="false">
+            <path
+              d="M12 3.5c3.3 0 6 2.7 6 6 0 5.8-4.8 10.3-6 11.3-1.2-1-6-5.5-6-11.3 0-3.3 2.7-6 6-6Zm0 2a4 4 0 0 0-4 4c0 3.9 2.8 7.2 4 8.5 1.2-1.3 4-4.6 4-8.5a4 4 0 0 0-4-4Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <h2 class="text-base font-bold">Yalla Khadra</h2>
+          <p class="text-xs text-sidebar-foreground/60">Smart Waste Management</p>
+        </div>
+      </a>
+      <button type="button" class="inline-flex h-8 w-8 items-center justify-center rounded-md hover:bg-sidebar-accent"
+        (click)="closeMobileSidebar()" aria-label="Close sidebar">
+        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false">
+          <path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6L19 6.4 17.6 5 12 10.6 6.4 5Z">
+          </path>
+        </svg>
+      </button>
+    </div>
+
+    <p class="px-2 pb-2 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/60">Pages</p>
+
+    @for (item of sidebarItems; track item.url) {
+    <a [routerLink]="item.url" routerLinkActive="bg-sidebar-accent text-sidebar-primary"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/85 hover:bg-sidebar-accent/70 transition-colors"
+      (click)="closeMobileSidebar()">
+      <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+        <path
+          d="M3 12.5 12 4l9 8.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5Zm2 1v6.5h2.5v-6h9v6H19v-6.5L12 6.8 5 13.5Z">
+        </path>
+      </svg>
+      <span>{{ item.title }}</span>
+    </a>
+    }
+  </aside>
+</div>
+}

@@ -1,0 +1,52 @@
+@if (open) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4" (click)="closeModal()" role="button"
+  tabindex="0">
+  <section class="w-full max-w-lg rounded-xl border border-border bg-card p-5 shadow-xl"
+    (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Add Category">
+    <header class="mb-4 flex items-center justify-between gap-3">
+      <h3 class="text-lg font-semibold">Add Category</h3>
+      <button type="button" (click)="closeModal()"
+        class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        aria-label="Close">
+        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+          <path d="M6.4 5 5 6.4 10.6 12 5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6L19 6.4 17.6 5 12 10.6 6.4 5Z">
+          </path>
+        </svg>
+      </button>
+    </header>
+
+    <div class="space-y-4">
+      <div class="space-y-2">
+        <label for="add-category-name" class="text-sm font-medium">Name</label>
+        <input id="add-category-name" type="text" [(ngModel)]="formName" placeholder="Category name"
+          class="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" />
+        @if (formErrors.name) {
+        <p class="text-xs text-red-600">{{ formErrors.name }}</p>
+        }
+      </div>
+
+      <div class="space-y-2">
+        <label for="add-category-description" class="text-sm font-medium">Description</label>
+        <textarea id="add-category-description" [(ngModel)]="formDescription" rows="4"
+          placeholder="Category description"
+          class="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"></textarea>
+        @if (formErrors.description) {
+        <p class="text-xs text-red-600">{{ formErrors.description }}</p>
+        }
+      </div>
+    </div>
+
+    <footer class="mt-5 flex justify-end gap-2">
+      <button type="button" (click)="closeModal()"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 text-sm font-medium transition hover:bg-muted">
+        Cancel
+      </button>
+
+      <button type="button" (click)="submit()"
+        class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:brightness-105">
+        Add
+      </button>
+    </footer>
+  </section>
+</div>
+}

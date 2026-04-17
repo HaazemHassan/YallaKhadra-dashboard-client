@@ -1,0 +1,186 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">Products</h1>
+    <p class="text-muted-foreground">Manage eco-store products</p>
+  </div>
+
+  <section class="glass-card rounded-xl">
+    <header class="border-b border-border p-4 sm:p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold">All Products</h2>
+
+        <div class="flex flex-wrap gap-2">
+          <div class="relative">
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path
+                d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.25-1.41 1.41-4.25-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z">
+              </path>
+            </svg>
+
+            <input type="text" placeholder="Search by name..." [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearchTermChange()"
+              class="h-10 w-56 rounded-md border border-input bg-background px-9 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" />
+          </div>
+
+          <div class="relative">
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path d="M3 5h18l-7 8v5l-4 1v-6L3 5Z"></path>
+            </svg>
+
+            <select [(ngModel)]="categoryFilter" (ngModelChange)="onCategoryFilterChange()"
+              class="h-10 w-44 rounded-md border border-input bg-background px-9 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20">
+              <option value="all">All Categories</option>
+              @for (category of categoryOptions; track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </div>
+
+          <button type="button" (click)="openAddModal()"
+            class="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:brightness-105">
+            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+              <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6V5Z"></path>
+            </svg>
+            <span>Add Product</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="p-4 sm:p-5">
+      @if (loadError) {
+      <div class="mb-4 rounded-md border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+        {{ loadError }}
+      </div>
+      }
+
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[900px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="px-4 py-3 font-medium text-muted-foreground">Image</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Name</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Category</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Points</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Stock</th>
+              <th class="px-4 py-3 text-right font-medium text-muted-foreground">Actions</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (isLoading) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">Loading products...</td>
+            </tr>
+            } @else if (pagedProducts.length === 0) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">No products found.</td>
+            </tr>
+            } @else {
+            @for (product of pagedProducts; track product.id) {
+            <tr class="border-b border-border transition-colors hover:bg-muted/50 last:border-0">
+              <td class="px-4 py-3">
+                <div class="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-muted">
+                  @if (product.images[0]) {
+                  <img [src]="product.images[0]" class="h-10 w-10 object-cover" alt="Product image" />
+                  } @else {
+                  <svg viewBox="0 0 24 24" class="h-4 w-4 fill-muted-foreground" focusable="false" aria-hidden="true">
+                    <path
+                      d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v12h16V6H4Zm2 10 3.5-4.5 2.5 3 3.5-4.5L18 16H6Zm2-7a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z">
+                    </path>
+                  </svg>
+                  }
+                </div>
+              </td>
+
+              <td class="px-4 py-3">
+                <p class="font-medium">{{ product.name }}</p>
+                <p class="max-w-[240px] truncate text-xs text-muted-foreground">{{ product.description }}</p>
+              </td>
+
+              <td class="px-4 py-3">
+                <span
+                  class="inline-flex items-center rounded-full bg-secondary px-2.5 py-1 text-xs font-medium text-secondary-foreground">
+                  {{ product.category }}
+                </span>
+              </td>
+
+              <td class="px-4 py-3 font-medium">{{ product.pointsCost }} pts</td>
+
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
+                  [ngClass]="getStockBadgeClass(product.stock)">
+                  {{ getStockText(product.stock) }}
+                </span>
+              </td>
+
+              <td class="px-4 py-3">
+                <div class="flex items-center justify-end gap-1">
+                  <button type="button" (click)="openEditModal(product)"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                    aria-label="Edit product">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                      <path
+                        d="M16.9 3.7a2.9 2.9 0 0 1 4 4L8.7 19.9 3 21l1.1-5.7L16.9 3.7Zm2.6 2.6a.9.9 0 0 0-1.3-1.3l-1.5 1.5 1.3 1.3 1.5-1.5ZM16.6 9l-1.3-1.3-9.4 9.4-.4 2 2-.4L16.6 9Z">
+                      </path>
+                    </svg>
+                  </button>
+
+                  <button type="button" (click)="openDeleteDialog(product)"
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-md text-destructive transition hover:bg-destructive/10"
+                    aria-label="Delete product">
+                    <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                      <path
+                        d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-2 6h2v9H7V9Zm4 0h2v9h-2V9Zm4 0h2v9h-2V9ZM6 21a2 2 0 0 1-2-2V8h16v11a2 2 0 0 1-2 2H6Z">
+                      </path>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages > 1) {
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-muted-foreground">
+          Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCount }}
+        </p>
+
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="goToPreviousPage()" [disabled]="!canGoPrevious"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Previous
+          </button>
+
+          <button type="button" (click)="goToNextPage()" [disabled]="!canGoNext"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Next
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>
+
+<app-add-product-modal [open]="isAddModalOpen" [categories]="categoryOptions" (close)="closeAddModal()"
+  (save)="handleAddProduct($event)">
+</app-add-product-modal>
+
+<app-edit-product-modal [open]="isEditModalOpen" [categories]="categoryOptions" [product]="editingProduct"
+  (close)="closeEditModal()" (save)="handleUpdateProduct($event)">
+</app-edit-product-modal>
+
+@if (isDeleteDialogOpen) {
+<app-delete-confirmation-modal [label]="deleteModal.label" [message]="deleteModal.message"
+  (cancel)="closeDeleteDialog()" (confirm)="confirmDelete()">
+</app-delete-confirmation-modal>
+}

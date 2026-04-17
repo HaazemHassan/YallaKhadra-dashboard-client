@@ -1,0 +1,60 @@
+@if (leaderboardState$ | async; as state) {
+<div class="space-y-6">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div>
+      <h1 class="text-2xl font-bold">Leaderboard</h1>
+      <p class="text-muted-foreground">Top contributors by reports</p>
+    </div>
+
+    <div class="inline-flex rounded-lg border border-border bg-muted p-1">
+      @for (option of periods; track option.value) {
+      <button type="button" (click)="setPeriod(option.value)"
+        class="rounded-md px-3 py-1.5 text-sm font-medium transition" [ngClass]="
+            selectedPeriod === option.value
+              ? 'bg-card text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          ">
+        {{ option.label }}
+      </button>
+      }
+    </div>
+  </div>
+
+  @if (state.loading) {
+  <div class="glass-card rounded-xl p-5 text-sm text-muted-foreground">
+    Loading leaderboard...
+  </div>
+  }
+
+  @if (state.error) {
+  <div class="rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+    {{ state.error }}
+  </div>
+  }
+
+  @if (!state.loading && !state.error) {
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    @for (user of state.topThree; track user.userId) {
+    <article class="glass-card rounded-xl p-6 text-center"
+      [ngClass]="user.rank === 1 ? 'border-primary/30 shadow-md' : ''">
+      <div class="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold"
+        [ngClass]="getRankBadgeClass(user.rank)">
+        #{{ user.rank }}
+      </div>
+
+      <div
+        class="mx-auto mb-3 h-16 w-16 rounded-full bg-primary/10 text-primary text-lg font-bold flex items-center justify-center">
+        {{ getInitials(user.fullName) }}
+      </div>
+
+      <h3 class="text-lg font-bold">{{ user.fullName }}</h3>
+      <p class="mt-1 text-2xl font-bold text-primary">{{ user.totalReportsCount }}</p>
+      <p class="text-xs text-muted-foreground">reports</p>
+    </article>
+    }
+  </div>
+
+  <app-leaderboard-table [rows]="state.rows"></app-leaderboard-table>
+  }
+</div>
+}
