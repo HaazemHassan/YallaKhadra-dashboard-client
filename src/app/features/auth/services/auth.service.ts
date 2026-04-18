@@ -34,4 +34,12 @@ export class AuthService {
       }
     );
   }
+
+  logout() {
+    return this.http.post<ApiResponse<boolean>>(
+      `${environment.apiBaseUrl}/api/authentication/logout`,
+      {},
+      { withCredentials: true }
+    );
+  }
 }

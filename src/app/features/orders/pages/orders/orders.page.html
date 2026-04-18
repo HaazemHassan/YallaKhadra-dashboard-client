@@ -1,0 +1,113 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">Orders</h1>
+    <p class="text-muted-foreground">Manage eco-store orders</p>
+  </div>
+
+  <section class="glass-card rounded-xl">
+    <header class="border-b border-border p-4 sm:p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold">All Orders</h2>
+
+        <div class="flex flex-wrap gap-2">
+          <div class="relative">
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path
+                d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.25-1.41 1.41-4.25-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z">
+              </path>
+            </svg>
+
+            <input type="text" placeholder="Search by user..." [ngModel]="searchTerm"
+              (ngModelChange)="onSearchTermChange($event)"
+              class="h-10 w-56 rounded-md border border-input bg-background px-9 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20" />
+          </div>
+
+          <div class="relative">
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path d="M3 5h18l-7 8v5l-4 1v-6L3 5Z"></path>
+            </svg>
+
+            <select [ngModel]="statusFilter" (ngModelChange)="onStatusFilterChange($event)"
+              class="h-10 w-40 rounded-md border border-input bg-background px-9 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20">
+              <option [ngValue]="allStatusesFilterValue">All Status</option>
+              @for (status of orderStatuses; track status) {
+              <option [ngValue]="status.value">{{ status.label }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    @if (loadError) {
+    <div class="border-b border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive sm:px-5">
+      {{ loadError }}
+    </div>
+    }
+
+    <div class="p-4 sm:p-5">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[760px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="px-4 py-3 font-medium text-muted-foreground">Order #</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">User</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Date</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Items</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Total Points</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (isLoading) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">Loading orders...</td>
+            </tr>
+            } @else if (pagedOrders.length === 0) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">No orders found.</td>
+            </tr>
+            } @else {
+            @for (order of pagedOrders; track order.id) {
+            <tr class="cursor-pointer border-b border-border transition-colors hover:bg-muted/50 last:border-0"
+              (click)="openOrderDetails(order.id)">
+              <td class="px-4 py-3 font-medium">#{{ order.id }}</td>
+              <td class="px-4 py-3">{{ order.userName }}</td>
+              <td class="px-4 py-3 text-muted-foreground">{{ order.date | date: 'yyyy-MM-dd' }}</td>
+              <td class="px-4 py-3">{{ order.itemCount }}</td>
+              <td class="px-4 py-3 font-medium">{{ order.totalPoints }} pts</td>
+              <td class="px-4 py-3">{{ getStatusLabel(order.status) }}</td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (totalPages > 1) {
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-muted-foreground">
+          Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCount }}
+        </p>
+
+        <div class="flex items-center gap-2">
+          <button type="button" (click)="goToPreviousPage()" [disabled]="!canGoPrevious"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Previous
+          </button>
+
+          <button type="button" (click)="goToNextPage()" [disabled]="!canGoNext"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Next
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>

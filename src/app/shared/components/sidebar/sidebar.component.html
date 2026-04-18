@@ -1,5 +1,6 @@
 <div class="min-h-screen flex w-full bg-background">
-  <aside class="hidden lg:flex lg:w-72 lg:flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
+  <aside
+    class="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-72 lg:flex-col bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
     <div class="p-4 border-b border-sidebar-border">
       <a routerLink="/dashboard/home" class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-sidebar-primary flex items-center justify-center" aria-hidden="true">
@@ -11,31 +12,55 @@
         </div>
         <div>
           <h1 class="text-base font-bold text-sidebar-foreground">Yalla Khadra</h1>
-          <p class="text-xs text-sidebar-foreground/60">Smart Waste Management</p>
         </div>
       </a>
     </div>
 
-    <nav class="p-3">
-      <p class="px-2 pb-2 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/60">Pages</p>
-      @for (item of sidebarItems; track item.url) {
-      <a [routerLink]="item.url" routerLinkActive="bg-sidebar-accent text-sidebar-primary"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/85 hover:bg-sidebar-accent/70 transition-colors">
-        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
-          <path
-            d="M3 12.5 12 4l9 8.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5Zm2 1v6.5h2.5v-6h9v6H19v-6.5L12 6.8 5 13.5Z">
-          </path>
-        </svg>
-        <span>{{ item.title }}</span>
-      </a>
+    <nav class="space-y-4 overflow-y-auto p-3">
+      @for (section of sidebarSections; track section.label) {
+      <section class="space-y-1">
+        <p class="px-2 pb-1 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/60">{{ section.label }}
+        </p>
+        @for (item of section.items; track item.url) {
+        <a [routerLink]="item.url" routerLinkActive="bg-sidebar-accent text-sidebar-primary"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/85 hover:bg-sidebar-accent/70 transition-colors">
+          <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+            @switch (item.icon) {
+            @case ('dashboard') {
+            <path d="M3 3h8v8H3V3Zm10 0h8v5h-8V3Zm0 7h8v11h-8V10ZM3 13h8v8H3v-8Z"></path>
+            }
+            @case ('folder') {
+            <path d="M2 7a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v1H2V7Zm0 3h20v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7Z"></path>
+            }
+            @case ('package') {
+            <path
+              d="m12 2 8 4.5v11L12 22l-8-4.5v-11L12 2Zm0 2.3-5.7 3.2L12 10.7l5.7-3.2L12 4.3ZM6 9.3v7.1l5 2.8v-7.1L6 9.3Zm7 9.9 5-2.8V9.3l-5 2.8v7.1Z">
+            </path>
+            }
+            @case ('cart') {
+            <path
+              d="M2 3h2.5l2.1 10.1a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.9-1.4L22 6H7.1l-.4-2H2V3Zm7 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z">
+            </path>
+            }
+            @case ('trophy') {
+            <path
+              d="M8 3h8v2h3v3a5 5 0 0 1-5 5h-1v2h3v2H8v-2h3v-2h-1a5 5 0 0 1-5-5V5h3V3Zm-1 4H5v1a3 3 0 0 0 3 3h1V7Zm10 0v4h1a3 3 0 0 0 3-3V7h-2Z">
+            </path>
+            }
+            }
+          </svg>
+          <span>{{ item.title }}</span>
+        </a>
+        }
+      </section>
       }
     </nav>
   </aside>
 
-  <div class="flex-1 flex flex-col min-w-0">
+  <div class="flex-1 flex flex-col min-w-0 lg:pl-72">
     <header class="h-16 border-b border-border bg-card flex items-center justify-between px-4 gap-4 shrink-0">
-      <div class="flex items-center gap-3 min-w-0">
+      <div class="flex items-center gap-3">
         <button type="button"
           class="lg:hidden inline-flex h-9 w-9 items-center justify-center rounded-md border border-border bg-background hover:bg-muted"
           (click)="toggleMobileSidebar()" aria-label="Open sidebar">
@@ -43,40 +68,46 @@
             <path d="M3 6h18v2H3V6Zm0 5h18v2H3v-2Zm0 5h18v2H3v-2Z"></path>
           </svg>
         </button>
-
-        <div class="relative hidden md:block">
-          <svg viewBox="0 0 24 24" class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
-            focusable="false" aria-hidden="true">
-            <path
-              d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.25-1.41 1.41-4.25-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z">
-            </path>
-          </svg>
-          <input type="text" placeholder="Search..."
-            class="h-10 w-64 rounded-md border border-transparent bg-muted px-9 text-sm outline-none focus:border-primary" />
-        </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <button type="button"
-          class="relative inline-flex h-9 w-9 items-center justify-center rounded-md hover:bg-muted">
-          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-muted-foreground" focusable="false" aria-hidden="true">
-            <path
-              d="M12 2a6 6 0 0 1 6 6v3.18l1.8 3.6A1 1 0 0 1 18.9 16H5.1a1 1 0 0 1-.9-1.22L6 11.18V8a6 6 0 0 1 6-6Zm0 2a4 4 0 0 0-4 4v3.42L6.72 14h10.56L16 11.42V8a4 4 0 0 0-4-4Zm0 17a3 3 0 0 1-2.82-2h5.64A3 3 0 0 1 12 21Z">
-            </path>
-          </svg>
-          <span class="absolute right-2 top-2 h-2 w-2 rounded-full bg-primary"></span>
-        </button>
+      <div class="flex items-center">
+        <div class="relative">
+          <button type="button" (click)="toggleUserMenu()"
+            class="flex items-center gap-2 rounded-lg border border-border/70 bg-background px-2 py-1 transition-colors hover:bg-muted/70"
+            [attr.aria-expanded]="isUserMenuOpen" aria-haspopup="menu" aria-label="Open user menu">
+            <div
+              class="h-9 w-9 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center"
+              aria-hidden="true">
+              {{ userInitials }}
+            </div>
+            <div class="hidden sm:block">
+              <p class="text-sm font-medium leading-tight">{{ displayName }}</p>
+              <p class="text-xs text-muted-foreground">{{ roleLabel }}</p>
+            </div>
+            <svg viewBox="0 0 24 24" class="h-4 w-4 fill-muted-foreground transition-transform"
+              [ngClass]="isUserMenuOpen ? 'rotate-180' : ''" focusable="false" aria-hidden="true">
+              <path d="m12 15.4-7-7L6.4 7 12 12.6 17.6 7 19 8.4l-7 7Z"></path>
+            </svg>
+          </button>
 
-        <div class="flex items-center gap-2">
-          <div
-            class="h-9 w-9 rounded-full bg-primary text-primary-foreground text-sm font-medium flex items-center justify-center"
-            aria-hidden="true">
-            AD
+          @if (isUserMenuOpen) {
+          <button type="button" class="fixed inset-0 z-10 cursor-default" (click)="closeUserMenu()"
+            aria-label="Close user menu"></button>
+
+          <div class="absolute right-0 top-full z-20 mt-2 w-52 rounded-lg border border-border bg-popover p-1 shadow-lg"
+            role="menu" aria-label="User menu">
+            <button type="button" (click)="onLogout()" [disabled]="isLoggingOut"
+              class="inline-flex w-full items-center gap-2 rounded-md px-3 py-2 text-sm font-semibold text-destructive transition hover:bg-destructive/10 disabled:cursor-not-allowed disabled:opacity-60"
+              role="menuitem">
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                <path
+                  d="M10 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-8v-2h8V5h-8V3Zm-1.3 4.3L7.3 8.7 9.6 11H2v2h7.6l-2.3 2.3 1.4 1.4L13.4 12 8.7 7.3Z">
+                </path>
+              </svg>
+              <span>{{ isLoggingOut ? 'Logging out...' : 'Logout' }}</span>
+            </button>
           </div>
-          <div class="hidden sm:block">
-            <p class="text-sm font-medium leading-tight">Admin</p>
-            <p class="text-xs text-muted-foreground">Super Admin</p>
-          </div>
+          }
         </div>
       </div>
     </header>
@@ -114,20 +145,45 @@
       </button>
     </div>
 
-    <p class="px-2 pb-2 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/60">Pages</p>
+    @for (section of sidebarSections; track section.label) {
+    <section class="mb-3 space-y-1">
+      <p class="px-2 pb-1 text-xs font-medium uppercase tracking-wide text-sidebar-foreground/60">{{ section.label }}
+      </p>
 
-    @for (item of sidebarItems; track item.url) {
-    <a [routerLink]="item.url" routerLinkActive="bg-sidebar-accent text-sidebar-primary"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/85 hover:bg-sidebar-accent/70 transition-colors"
-      (click)="closeMobileSidebar()">
-      <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
-        <path
-          d="M3 12.5 12 4l9 8.5v8.5a1 1 0 0 1-1 1h-5.5v-6h-5v6H4a1 1 0 0 1-1-1v-8.5Zm2 1v6.5h2.5v-6h9v6H19v-6.5L12 6.8 5 13.5Z">
-        </path>
-      </svg>
-      <span>{{ item.title }}</span>
-    </a>
+      @for (item of section.items; track item.url) {
+      <a [routerLink]="item.url" routerLinkActive="bg-sidebar-accent text-sidebar-primary"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center gap-2 rounded-md px-2.5 py-2 text-sm text-sidebar-foreground/85 hover:bg-sidebar-accent/70 transition-colors"
+        (click)="closeMobileSidebar()">
+        <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+          @switch (item.icon) {
+          @case ('dashboard') {
+          <path d="M3 3h8v8H3V3Zm10 0h8v5h-8V3Zm0 7h8v11h-8V10ZM3 13h8v8H3v-8Z"></path>
+          }
+          @case ('folder') {
+          <path d="M2 7a2 2 0 0 1 2-2h5l2 2h9a2 2 0 0 1 2 2v1H2V7Zm0 3h20v7a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-7Z"></path>
+          }
+          @case ('package') {
+          <path
+            d="m12 2 8 4.5v11L12 22l-8-4.5v-11L12 2Zm0 2.3-5.7 3.2L12 10.7l5.7-3.2L12 4.3ZM6 9.3v7.1l5 2.8v-7.1L6 9.3Zm7 9.9 5-2.8V9.3l-5 2.8v7.1Z">
+          </path>
+          }
+          @case ('cart') {
+          <path
+            d="M2 3h2.5l2.1 10.1a2 2 0 0 0 2 1.6h8.7a2 2 0 0 0 1.9-1.4L22 6H7.1l-.4-2H2V3Zm7 15a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z">
+          </path>
+          }
+          @case ('trophy') {
+          <path
+            d="M8 3h8v2h3v3a5 5 0 0 1-5 5h-1v2h3v2H8v-2h3v-2h-1a5 5 0 0 1-5-5V5h3V3Zm-1 4H5v1a3 3 0 0 0 3 3h1V7Zm10 0v4h1a3 3 0 0 0 3-3V7h-2Z">
+          </path>
+          }
+          }
+        </svg>
+        <span>{{ item.title }}</span>
+      </a>
+      }
+    </section>
     }
   </aside>
 </div>

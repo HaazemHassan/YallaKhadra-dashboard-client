@@ -67,7 +67,7 @@ export class LoginPageComponent {
           this.userStore.setSession(response.data);
 
           if (!this.userStore.canAccessAdminDashboard()) {
-            this.rejectLogin(response.message);
+            this.rejectLogin("Email or password is invalid");
             return;
           }
 
