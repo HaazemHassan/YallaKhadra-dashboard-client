@@ -21,78 +21,88 @@ export class SidebarComponent {
   private readonly router = inject(Router);
   private readonly toastr = inject(ToastrService);
 
-  readonly sidebarSections: SidebarSection[] = [
-    {
-      label: 'Overview',
-      items: [
-        {
-          title: 'Home',
-          url: '/dashboard/home',
-          icon: 'dashboard'
-        }
-      ]
-    },
-    {
-      label: 'Waste Management',
-      items: [
-        {
-          title: 'Reports',
-          url: '/dashboard/reports',
-          icon: 'folder'
-        }
-      ]
-    },
-    {
-      label: 'E-Commerce',
-      items: [
-        {
-          title: 'Categories',
-          url: '/dashboard/categories',
-          icon: 'folder'
-        },
-        {
-          title: 'Products',
-          url: '/dashboard/products',
-          icon: 'package'
-        },
-        {
-          title: 'Orders',
-          url: '/dashboard/orders',
-          icon: 'cart'
-        }
-      ]
-    },
-    {
-      label: 'Rankings',
-      items: [
-        {
-          title: 'Leaderboard',
-          url: '/dashboard/leaderboard',
-          icon: 'trophy'
-        }
-      ]
-    },
-    {
-      label: 'User Management',
-      items: [
-        {
-          title: 'Users',
-          url: '/dashboard/users',
-          icon: 'users'
-        },
-        {
-          title: 'Workers',
-          url: '/dashboard/workers',
-          icon: 'users'
-        },
-        {
+  get sidebarSections(): SidebarSection[] {
+    const sections: SidebarSection[] = [
+      {
+        label: 'Overview',
+        items: [
+          {
+            title: 'Home',
+            url: '/dashboard/home',
+            icon: 'dashboard'
+          }
+        ]
+      },
+      {
+        label: 'Waste Management',
+        items: [
+          {
+            title: 'Reports',
+            url: '/dashboard/reports',
+            icon: 'folder'
+          }
+        ]
+      },
+      {
+        label: 'E-Commerce',
+        items: [
+          {
+            title: 'Categories',
+            url: '/dashboard/categories',
+            icon: 'folder'
+          },
+          {
+            title: 'Products',
+            url: '/dashboard/products',
+            icon: 'package'
+          },
+          {
+            title: 'Orders',
+            url: '/dashboard/orders',
+            icon: 'cart'
+          }
+        ]
+      },
+      {
+        label: 'Rankings',
+        items: [
+          {
+            title: 'Leaderboard',
+            url: '/dashboard/leaderboard',
+            icon: 'trophy'
+          }
+        ]
+      },
+      {
+        label: 'User Management',
+        items: [
+          {
+            title: 'Users',
+            url: '/dashboard/users',
+            icon: 'users'
+          },
+          {
+            title: 'Workers',
+            url: '/dashboard/workers',
+            icon: 'users'
+          }
+        ]
+      }
+    ];
+
+    if (this.userStore.roles().includes(UserRole.SuperAdmin)) {
+      const userManagementSection = sections.find(s => s.label === 'User Management');
+      if (userManagementSection) {
+        userManagementSection.items.push({
           title: 'Admins',
           url: '/dashboard/admins',
           icon: 'users'
-        }
-      ]
+        });
+      }
     }
-  ];
+
+    return sections;
+  }
 
   isMobileSidebarOpen = false;
   isLoggingOut = false;

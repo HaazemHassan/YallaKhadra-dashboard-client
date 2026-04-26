@@ -68,15 +68,15 @@
   .glass-card {
     @apply bg-card/80 backdrop-blur-sm border border-border shadow-sm;
   }
-  
+
   .badge-pending {
     @apply border border-input bg-transparent text-foreground;
   }
-  
+
   .badge-in-progress {
     @apply bg-secondary text-secondary-foreground border border-transparent;
   }
-  
+
   .badge-done {
     @apply bg-primary text-primary-foreground border border-transparent;
   }

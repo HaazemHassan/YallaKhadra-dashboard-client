@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { HomeLayoutComponent } from './layouts/home-layout/home-layout.component';
-import { authChildGuard, authGuard } from './shared/guards/auth.guard';
+import { authChildGuard, authGuard, superAdminGuard } from './shared/guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -67,7 +67,8 @@ export const routes: Routes = [
       {
         path: 'admins',
         loadChildren: () =>
-          import('./features/users/users.routes').then((m) => m.ADMINS_ROUTES)
+          import('./features/users/users.routes').then((m) => m.ADMINS_ROUTES),
+        canActivate: [superAdminGuard]
       },
       {
         path: 'add-worker',
@@ -77,7 +78,8 @@ export const routes: Routes = [
       {
         path: 'add-admin',
         loadChildren: () =>
-          import('./features/users/users.routes').then((m) => m.ADD_ADMIN_ROUTES)
+          import('./features/users/users.routes').then((m) => m.ADD_ADMIN_ROUTES),
+        canActivate: [superAdminGuard]
       }
     ]
   },
