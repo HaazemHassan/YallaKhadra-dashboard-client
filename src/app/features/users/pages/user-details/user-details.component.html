@@ -1,0 +1,193 @@
+<div class="space-y-6">
+  <!-- Header with Back Button -->
+  <div class="flex items-center gap-3">
+    <button type="button" (click)="goBack()"
+      class="inline-flex h-9 w-9 items-center justify-center rounded-md transition hover:bg-muted"
+      aria-label="Go back">
+      <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false">
+        <path d="M20 11H7.8l5.6-5.6L12 4l-8 8 8 8 1.4-1.4L7.8 13H20v-2Z"></path>
+      </svg>
+    </button>
+    <h1 class="text-2xl font-bold">{{ pageTitle }}</h1>
+  </div>
+
+  @if (isLoading) {
+  <div class="glass-card flex items-center justify-center rounded-xl p-12">
+    <p class="text-muted-foreground">Loading details...</p>
+  </div>
+  } @else if (loadError) {
+  <div class="glass-card rounded-xl border-destructive/20 bg-destructive/10 p-6">
+    <p class="text-sm text-destructive">{{ loadError }}</p>
+  </div>
+  } @else {
+  <!-- User Info Card -->
+  <section class="glass-card rounded-xl">
+    <div class="p-6">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-center">
+        <!-- Avatar -->
+        @if (displayImage) {
+        <img [src]="displayImage" [alt]="displayName"
+          class="h-20 w-20 shrink-0 rounded-full object-cover border-2 border-primary/20" />
+        } @else {
+        <div
+          class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary/10 text-2xl font-bold text-primary">
+          {{ initials }}
+        </div>
+        }
+
+        <!-- Details -->
+        <div class="flex-1">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 class="text-xl font-bold">{{ displayName }}</h2>
+              <p class="text-muted-foreground">{{ displayEmail }}</p>
+            </div>
+
+            <!-- Lock/Unlock Button -->
+            <button type="button" (click)="toggleLock()" [disabled]="isToggling" [ngClass]="{
+                'bg-primary text-primary-foreground hover:brightness-105': isLocked,
+                'border border-border bg-background hover:bg-muted': !isLocked
+              }"
+              class="inline-flex h-10 items-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-60">
+              @if (isLocked) {
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6-9h-1V6a5 5 0 0 0-10 0h2a3 3 0 1 1 6 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Z"></path>
+              </svg>
+              <span>{{ isToggling ? 'Processing...' : 'Unlock' }}</span>
+              } @else {
+              <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6-9h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Zm-9-2a3 3 0 1 1 6 0v2H9V6Z"></path>
+              </svg>
+              <span>{{ isToggling ? 'Processing...' : 'Lock' }}</span>
+              }
+            </button>
+          </div>
+
+          <div class="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
+            <div>
+              <p class="text-xs text-muted-foreground">Phone</p>
+              <p class="text-sm font-medium">{{ displayPhone }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-muted-foreground">Address</p>
+              <p class="text-sm font-medium">{{ displayAddress }}</p>
+            </div>
+            @if (!isWorker && userDetails) {
+            <div>
+              <p class="text-xs text-muted-foreground">Points</p>
+              <p class="text-sm font-bold text-primary">{{ userDetails.points ?? 0 }}</p>
+            </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Cards -->
+  @if (!isWorker && userDetails) {
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <!-- Pending Reports -->
+    <section class="glass-card rounded-xl">
+      <div class="flex items-center gap-4 p-5">
+        <div class="rounded-xl bg-muted p-3 text-amber-500">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false" aria-hidden="true">
+            <path d="M1 21h22L12 2 1 21Zm12-3h-2v-2h2v2Zm0-4h-2v-4h2v4Z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">{{ userDetails.pendingReportsCount }}</p>
+          <p class="text-sm text-muted-foreground">Pending Reports</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- In Progress Reports -->
+    <section class="glass-card rounded-xl">
+      <div class="flex items-center gap-4 p-5">
+        <div class="rounded-xl bg-muted p-3 text-blue-500">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false" aria-hidden="true">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm1 15h-2v-2h2v2Zm0-4h-2V7h2v6Z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">{{ userDetails.inProgressReportsCount }}</p>
+          <p class="text-sm text-muted-foreground">In Progress Reports</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Done Reports -->
+    <section class="glass-card rounded-xl">
+      <div class="flex items-center gap-4 p-5">
+        <div class="rounded-xl bg-muted p-3 text-primary">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false" aria-hidden="true">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-2 15-5-5 1.4-1.4L10 14.2l7.6-7.6L19 8l-9 9Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">{{ userDetails.doneReportsCount }}</p>
+          <p class="text-sm text-muted-foreground">Done Reports</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  }
+
+  <!-- Worker Stats Cards -->
+  @if (isWorker && workerDetails) {
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <!-- Total Cleanups -->
+    <section class="glass-card rounded-xl">
+      <div class="flex items-center gap-4 p-5">
+        <div class="rounded-xl bg-muted p-3 text-primary">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false" aria-hidden="true">
+            <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm-2 15-5-5 1.4-1.4L10 14.2l7.6-7.6L19 8l-9 9Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">{{ workerDetails.totalCleanups }}</p>
+          <p class="text-sm text-muted-foreground">Total Cleanups</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Avg Response Time -->
+    <section class="glass-card rounded-xl">
+      <div class="flex items-center gap-4 p-5">
+        <div class="rounded-xl bg-muted p-3 text-blue-500">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false" aria-hidden="true">
+            <path
+              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2ZM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8Zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">{{ workerDetails.avgResponseTime }}h</p>
+          <p class="text-sm text-muted-foreground">Avg Response Time</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Total Hours -->
+    <section class="glass-card rounded-xl">
+      <div class="flex items-center gap-4 p-5">
+        <div class="rounded-xl bg-muted p-3 text-primary">
+          <svg viewBox="0 0 24 24" class="h-5 w-5 fill-current" focusable="false" aria-hidden="true">
+            <path
+              d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2ZM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8Zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7Z">
+            </path>
+          </svg>
+        </div>
+        <div>
+          <p class="text-2xl font-bold">{{ workerDetails.totalHours }}h</p>
+          <p class="text-sm text-muted-foreground">Total Hours</p>
+        </div>
+      </div>
+    </section>
+  </div>
+  }
+  }
+</div>

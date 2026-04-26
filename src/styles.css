@@ -24,6 +24,12 @@
     --accent: 142 50% 92%;
     --accent-foreground: 142 60% 25%;
 
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 150 30% 10%;
+
     --border: 140 15% 90%;
     --input: 140 15% 90%;
     --ring: 142 64% 38%;
@@ -61,5 +67,17 @@
 @layer components {
   .glass-card {
     @apply bg-card/80 backdrop-blur-sm border border-border shadow-sm;
+  }
+  
+  .badge-pending {
+    @apply border border-input bg-transparent text-foreground;
+  }
+  
+  .badge-in-progress {
+    @apply bg-secondary text-secondary-foreground border border-transparent;
+  }
+  
+  .badge-done {
+    @apply bg-primary text-primary-foreground border border-transparent;
   }
 }

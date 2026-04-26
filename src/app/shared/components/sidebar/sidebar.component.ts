@@ -33,6 +33,16 @@ export class SidebarComponent {
       ]
     },
     {
+      label: 'Waste Management',
+      items: [
+        {
+          title: 'Reports',
+          url: '/dashboard/reports',
+          icon: 'folder'
+        }
+      ]
+    },
+    {
       label: 'E-Commerce',
       items: [
         {
@@ -59,6 +69,26 @@ export class SidebarComponent {
           title: 'Leaderboard',
           url: '/dashboard/leaderboard',
           icon: 'trophy'
+        }
+      ]
+    },
+    {
+      label: 'User Management',
+      items: [
+        {
+          title: 'Users',
+          url: '/dashboard/users',
+          icon: 'users'
+        },
+        {
+          title: 'Workers',
+          url: '/dashboard/workers',
+          icon: 'users'
+        },
+        {
+          title: 'Admins',
+          url: '/dashboard/admins',
+          icon: 'users'
         }
       ]
     }

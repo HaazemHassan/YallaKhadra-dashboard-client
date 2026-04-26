@@ -1,39 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 import { DashboardSnapshot } from '../models/dashboard-snapshot.interface';
 import { PeriodKey } from '../models/period-key.enum';
 import { StatCard } from '../models/stat-card.interface';
-
-const SNAPSHOTS: Record<PeriodKey, DashboardSnapshot> = {
-  [PeriodKey.All]: {
-    reports: { total: 1284, pending: 47, inProgress: 23, completed: 1214, waste: 8740, aiScans: 3621 },
-    users: { total: 2450, workers: 38, admins: 5 },
-    ecommerce: { categories: 12, products: 86, orders: 634, itemsSold: 2180 }
-  },
-  [PeriodKey.Yearly]: {
-    reports: { total: 1284, pending: 47, inProgress: 23, completed: 1214, waste: 8740, aiScans: 3621 },
-    users: { total: 2450, workers: 38, admins: 5 },
-    ecommerce: { categories: 12, products: 86, orders: 634, itemsSold: 2180 }
-  },
-  [PeriodKey.Monthly]: {
-    reports: { total: 156, pending: 12, inProgress: 8, completed: 136, waste: 1024, aiScans: 412 },
-    users: { total: 185, workers: 6, admins: 1 },
-    ecommerce: { categories: 12, products: 86, orders: 71, itemsSold: 245 }
-  },
-  [PeriodKey.Weekly]: {
-    reports: { total: 38, pending: 5, inProgress: 3, completed: 30, waste: 256, aiScans: 98 },
-    users: { total: 42, workers: 2, admins: 0 },
-    ecommerce: { categories: 12, products: 86, orders: 18, itemsSold: 62 }
-  }
-};
+import { DashboardService, DashboardTrendsDto } from '../services/dashboard.service';
 
 @Component({
   selector: 'app-home-page',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BaseChartDirective],
   templateUrl: './home.page.html'
 })
-export class HomePageComponent {
+export class HomePageComponent implements OnInit {
+  private readonly dashboardService = inject(DashboardService);
+
   readonly periods: Array<{ key: PeriodKey; label: string }> = [
     { key: PeriodKey.All, label: 'All Time' },
     { key: PeriodKey.Yearly, label: 'Yearly' },
@@ -41,14 +24,44 @@ export class HomePageComponent {
     { key: PeriodKey.Weekly, label: 'Weekly' }
   ];
 
-  period: PeriodKey = PeriodKey.All;
+  period = signal<PeriodKey>(PeriodKey.All);
+  snapshot = signal<DashboardSnapshot | null>(null);
+  trends = signal<DashboardTrendsDto | null>(null);
+  isLoading = signal<boolean>(false);
+  error = signal<string | null>(null);
 
-  setPeriod(period: PeriodKey): void {
-    this.period = period;
+  ngOnInit(): void {
+    this.loadAnalytics();
   }
 
-  get reportCards(): StatCard[] {
-    const data = SNAPSHOTS[this.period].reports;
+  setPeriod(period: PeriodKey): void {
+    this.period.set(period);
+    this.loadAnalytics();
+  }
+
+  private loadAnalytics(): void {
+    this.isLoading.set(true);
+    this.error.set(null);
+    
+    forkJoin({
+      analytics: this.dashboardService.getAnalytics(this.period()),
+      trends: this.dashboardService.getTrends(this.period())
+    }).subscribe({
+      next: (data) => {
+        this.snapshot.set(data.analytics);
+        this.trends.set(data.trends);
+        this.isLoading.set(false);
+      },
+      error: (err) => {
+        this.error.set(err.message || 'Failed to load dashboard data.');
+        this.isLoading.set(false);
+      }
+    });
+  }
+
+  reportCards = computed<StatCard[]>(() => {
+    const data = this.snapshot()?.reports;
+    if (!data) return [];
     return [
       {
         title: 'Total Reports',
@@ -87,10 +100,11 @@ export class HomePageComponent {
         colorClass: 'text-violet-500'
       }
     ];
-  }
+  });
 
-  get userCards(): StatCard[] {
-    const data = SNAPSHOTS[this.period].users;
+  userCards = computed<StatCard[]>(() => {
+    const data = this.snapshot()?.users;
+    if (!data) return [];
     return [
       {
         title: 'Total Users',
@@ -111,10 +125,11 @@ export class HomePageComponent {
         colorClass: 'text-violet-500'
       }
     ];
-  }
+  });
 
-  get ecommerceCards(): StatCard[] {
-    const data = SNAPSHOTS[this.period].ecommerce;
+  ecommerceCards = computed<StatCard[]>(() => {
+    const data = this.snapshot()?.ecommerce;
+    if (!data) return [];
     return [
       {
         title: 'Categories',
@@ -141,5 +156,98 @@ export class HomePageComponent {
         colorClass: 'text-emerald-600'
       }
     ];
-  }
+  });
+
+  // Chart configuration
+  readonly chartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: { color: '#888' }
+      }
+    }
+  };
+
+  reportsChartData = computed<ChartData<'doughnut'>>(() => {
+    const data = this.snapshot()?.reports;
+    if (!data) return { labels: [], datasets: [] };
+    return {
+      labels: ['Pending', 'In Progress', 'Completed'],
+      datasets: [
+        {
+          data: [data.pending, data.inProgress, data.completed],
+          backgroundColor: ['#f59e0b', '#0ea5e9', '#059669'],
+          hoverBackgroundColor: ['#d97706', '#0284c7', '#047857'],
+          borderWidth: 0
+        }
+      ]
+    };
+  });
+
+  usersChartData = computed<ChartData<'doughnut'>>(() => {
+    const data = this.snapshot()?.users;
+    if (!data) return { labels: [], datasets: [] };
+    const customers = Math.max(0, data.total - data.workers - data.admins);
+    return {
+      labels: ['Workers', 'Admins', 'Customers'],
+      datasets: [
+        {
+          data: [data.workers, data.admins, customers],
+          backgroundColor: ['#0ea5e9', '#8b5cf6', '#10b981'],
+          hoverBackgroundColor: ['#0284c7', '#7c3aed', '#059669'],
+          borderWidth: 0
+        }
+      ]
+    };
+  });
+
+  // Line chart configuration
+  readonly lineChartOptions: ChartConfiguration['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { color: '#888' } }
+    },
+    scales: {
+      y: { beginAtZero: true }
+    }
+  };
+
+  reportsTrendData = computed<ChartData<'line'>>(() => {
+    const data = this.trends()?.reportsTrend;
+    if (!data) return { labels: [], datasets: [] };
+    return {
+      labels: data.map(d => d.dateLabel),
+      datasets: [
+        {
+          data: data.map(d => d.value),
+          label: 'Reports Submitted',
+          borderColor: '#0ea5e9',
+          backgroundColor: 'rgba(14, 165, 233, 0.2)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    };
+  });
+
+  ordersTrendData = computed<ChartData<'line'>>(() => {
+    const data = this.trends()?.ordersTrend;
+    if (!data) return { labels: [], datasets: [] };
+    return {
+      labels: data.map(d => d.dateLabel),
+      datasets: [
+        {
+          data: data.map(d => d.value),
+          label: 'Orders Placed',
+          borderColor: '#f59e0b',
+          backgroundColor: 'rgba(245, 158, 11, 0.2)',
+          fill: true,
+          tension: 0.4
+        }
+      ]
+    };
+  });
 }

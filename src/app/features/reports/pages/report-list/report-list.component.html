@@ -1,0 +1,168 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">All Reports</h1>
+    <p class="text-muted-foreground">View and manage waste reports</p>
+  </div>
+
+  <section class="glass-card rounded-xl">
+    <header class="border-b border-border p-4 sm:p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold">Reports ({{ totalCount }})</h2>
+
+        <div class="flex items-center gap-2">
+          <!-- Status Filter -->
+          <div class="relative">
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path
+                d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0 0 18.95 4H5.04c-.83 0-1.3.95-.79 1.61Z">
+              </path>
+            </svg>
+
+            <select [(ngModel)]="statusFilter" (ngModelChange)="onStatusFilterChange()"
+              class="h-10 appearance-none rounded-md border border-input bg-background pl-9 pr-8 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 cursor-pointer">
+              @for (opt of statusOptions; track opt.value) {
+              <option [value]="opt.value">{{ opt.label }}</option>
+              }
+            </select>
+
+            <svg viewBox="0 0 24 24"
+              class="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+              focusable="false" aria-hidden="true">
+              <path d="m12 15.4-7-7L6.4 7 12 12.6 17.6 7 19 8.4l-7 7Z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    @if (loadError) {
+    <div class="border-b border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive sm:px-5">
+      {{ loadError }}
+    </div>
+    }
+
+    <div class="p-4 sm:p-5">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[700px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="px-4 py-3 font-medium text-muted-foreground">ID</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Address</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Status</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Waste Type</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Reporter</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Date</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (isLoading) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">
+                <div class="flex flex-col items-center gap-2">
+                  <div class="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                  <span>Loading reports...</span>
+                </div>
+              </td>
+            </tr>
+            } @else if (reports.length === 0) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">
+                <div class="flex flex-col items-center gap-2">
+                  <svg viewBox="0 0 24 24" class="h-8 w-8 fill-muted-foreground/50" focusable="false"
+                    aria-hidden="true">
+                    <path
+                      d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6Zm2 16H8v-2h8v2Zm0-4H8v-2h8v2Zm-3-5V3.5L18.5 9H13Z">
+                    </path>
+                  </svg>
+                  <span>No reports found.</span>
+                </div>
+              </td>
+            </tr>
+            } @else {
+            @for (report of reports; track report.id) {
+            <tr class="border-b border-border transition-colors hover:bg-muted/50 last:border-0 cursor-pointer"
+              (click)="navigateToReport(report)">
+              <td class="px-4 py-3 font-medium text-primary">#{{ report.id }}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <svg viewBox="0 0 24 24" class="h-4 w-4 shrink-0 fill-muted-foreground" focusable="false"
+                    aria-hidden="true">
+                    <path
+                      d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7Zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5Z">
+                    </path>
+                  </svg>
+                  <span class="truncate max-w-[200px]">{{ report.address }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-3">
+                <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium"
+                  [ngClass]="getStatusClass(report.status)">
+                  {{ getStatusLabel(report.status) }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-muted-foreground">{{ getWasteTypeLabel(report.wasteType) }}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-medium text-primary">
+                    {{ report.userName.charAt(0).toUpperCase() }}
+                  </div>
+                  <span class="text-muted-foreground">{{ report.userName }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-muted-foreground">{{ formatDate(report.createdAt) }}</td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      @if (totalCount > 0) {
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <p class="text-sm text-muted-foreground">
+            Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCount }}
+          </p>
+
+          <div class="flex items-center gap-1.5">
+            <label for="reportPageSizeSelect" class="text-sm text-muted-foreground">Per page:</label>
+            <select id="reportPageSizeSelect" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()"
+              class="h-8 rounded-md border border-input bg-background px-2 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20">
+              @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button type="button" (click)="goToPreviousPage()" [disabled]="!canGoPrevious"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Previous
+          </button>
+
+          @for (p of pageNumbers; track p) {
+          <button type="button" (click)="goToPage(p)" [ngClass]="{
+              'bg-primary text-primary-foreground': p === page,
+              'bg-background hover:bg-muted': p !== page
+            }"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-sm font-medium transition">
+            {{ p }}
+          </button>
+          }
+
+          <button type="button" (click)="goToNextPage()" [disabled]="!canGoNext"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Next
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>

@@ -1,8 +1,9 @@
-import { ApplicationConfig, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
 import { provideToastr } from 'ngx-toastr';
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './shared/interceptors/auth.interceptor';
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
       progressBar: true,
       preventDuplicates: true,
       positionClass: 'toast-top-right'
-    })
+    }),
+    provideCharts(withDefaultRegisterables())
   ]
 };

@@ -1,0 +1,178 @@
+<div class="space-y-6">
+  <div>
+    <h1 class="text-2xl font-bold">All Users</h1>
+    <p class="text-muted-foreground">Manage user accounts</p>
+  </div>
+
+  <section class="glass-card rounded-xl">
+    <header class="border-b border-border p-4 sm:p-5">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h2 class="text-lg font-semibold">Users ({{ totalCount }})</h2>
+
+        <div class="relative">
+          <svg viewBox="0 0 24 24"
+            class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 fill-muted-foreground"
+            focusable="false" aria-hidden="true">
+            <path
+              d="M10.5 3a7.5 7.5 0 0 1 5.92 12.1l4.24 4.25-1.41 1.41-4.25-4.24A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11Z">
+            </path>
+          </svg>
+
+          <input type="text" placeholder="Search by email..." [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchTermChange()"
+            class="h-10 w-full rounded-md border border-input bg-background pl-9 pr-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 sm:w-60" />
+        </div>
+      </div>
+    </header>
+
+    @if (loadError) {
+    <div class="border-b border-destructive/20 bg-destructive/10 px-4 py-3 text-sm text-destructive sm:px-5">
+      {{ loadError }}
+    </div>
+    }
+
+    <div class="p-4 sm:p-5">
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[760px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-border">
+              <th class="px-4 py-3 font-medium text-muted-foreground">User</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Email</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Phone</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Address</th>
+              <th class="px-4 py-3 font-medium text-muted-foreground">Points</th>
+              <th class="px-4 py-3 text-right font-medium text-muted-foreground">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @if (isLoading) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">Loading users...</td>
+            </tr>
+            } @else if (filteredUsers.length === 0) {
+            <tr>
+              <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">No users found.</td>
+            </tr>
+            } @else {
+            @for (user of filteredUsers; track user.id) {
+            <tr class="border-b border-border transition-colors hover:bg-muted/50 last:border-0">
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-3 cursor-pointer" (click)="navigateToUser(user)">
+                  <div
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
+                    {{ getUserInitials(user) }}
+                  </div>
+                  <span class="font-medium">{{ user.name }}</span>
+                  @if (user.isLocked) {
+                  <span
+                    class="inline-flex items-center rounded-full bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive">
+                    Locked
+                  </span>
+                  }
+                </div>
+              </td>
+              <td class="px-4 py-3 text-muted-foreground">{{ user.email }}</td>
+              <td class="px-4 py-3 text-muted-foreground">{{ user.phoneNumber ?? '—' }}</td>
+              <td class="px-4 py-3 text-muted-foreground">{{ user.address ?? '—' }}</td>
+              <td class="px-4 py-3 font-medium text-primary">{{ user.points ?? 0 }}</td>
+              <td class="px-4 py-3 text-right">
+                <button type="button" (click)="openConfirmDialog(user)" [ngClass]="{
+                    'bg-primary text-primary-foreground hover:brightness-105': user.isLocked,
+                    'border border-border bg-background hover:bg-muted': !user.isLocked
+                  }"
+                  class="inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-sm font-medium transition">
+                  @if (user.isLocked) {
+                  <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                    <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6-9h-1V6a5 5 0 0 0-10 0h2a3 3 0 1 1 6 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Z"></path>
+                  </svg>
+                  <span>Unlock</span>
+                  } @else {
+                  <svg viewBox="0 0 24 24" class="h-4 w-4 fill-current" focusable="false" aria-hidden="true">
+                    <path d="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm6-9h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Zm-9-2a3 3 0 1 1 6 0v2H9V6Z"></path>
+                  </svg>
+                  <span>Lock</span>
+                  }
+                </button>
+              </td>
+            </tr>
+            }
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Controls -->
+      @if (totalCount > 0) {
+      <div class="mt-4 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <p class="text-sm text-muted-foreground">
+            Showing {{ pageStart }}-{{ pageEnd }} of {{ totalCount }}
+          </p>
+
+          <div class="flex items-center gap-1.5">
+            <label for="pageSizeSelect" class="text-sm text-muted-foreground">Per page:</label>
+            <select id="pageSizeSelect" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()"
+              class="h-8 rounded-md border border-input bg-background px-2 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20">
+              @for (size of pageSizeOptions; track size) {
+              <option [value]="size">{{ size }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button type="button" (click)="goToPreviousPage()" [disabled]="!canGoPrevious"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Previous
+          </button>
+
+          @for (p of pageNumbers; track p) {
+          <button type="button" (click)="goToPage(p)" [ngClass]="{
+              'bg-primary text-primary-foreground': p === page,
+              'bg-background hover:bg-muted': p !== page
+            }"
+            class="inline-flex h-9 w-9 items-center justify-center rounded-md border border-border text-sm font-medium transition">
+            {{ p }}
+          </button>
+          }
+
+          <button type="button" (click)="goToNextPage()" [disabled]="!canGoNext"
+            class="inline-flex h-9 items-center justify-center rounded-md border border-border bg-background px-3 text-sm transition hover:bg-muted disabled:cursor-not-allowed disabled:opacity-50">
+            Next
+          </button>
+        </div>
+      </div>
+      }
+    </div>
+  </section>
+</div>
+
+<!-- Confirm Lock/Unlock Dialog -->
+@if (confirmUser) {
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-black/40" (click)="closeConfirmDialog()">
+  <div class="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-xl animate-fade-in"
+    (click)="$event.stopPropagation()">
+    <h3 class="text-lg font-semibold">
+      {{ confirmUser.isLocked ? 'Unlock' : 'Lock' }} User?
+    </h3>
+    <p class="mt-2 text-sm text-muted-foreground">
+      Are you sure you want to {{ confirmUser.isLocked ? 'unlock' : 'lock' }} {{ confirmUser.name }}?
+    </p>
+
+    <div class="mt-6 flex items-center justify-end gap-3">
+      <button type="button" (click)="closeConfirmDialog()"
+        class="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 text-sm font-medium transition hover:bg-muted">
+        Cancel
+      </button>
+      <button type="button" (click)="confirmToggleLock()" [disabled]="isToggling" [ngClass]="{
+          'bg-primary hover:brightness-105': confirmUser.isLocked,
+          'bg-destructive hover:brightness-105': !confirmUser.isLocked
+        }"
+        class="inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium text-white transition disabled:cursor-not-allowed disabled:opacity-60">
+        {{ isToggling ? 'Processing...' : 'Confirm' }}
+      </button>
+    </div>
+  </div>
+</div>
+}
