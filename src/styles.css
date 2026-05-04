@@ -62,6 +62,12 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
   }
+
+  /* Hide native browser password reveal buttons */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
 }
 
 @layer components {
