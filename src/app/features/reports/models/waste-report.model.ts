@@ -37,16 +37,18 @@ export enum ReportStatus {
 }
 
 export enum WasteType {
-  Unknown = 0,
-  Plastic = 1,
-  Paper = 2,
-  Glass = 3,
-  Metal = 4,
-  Organic = 5,
-  Electronic = 6,
-  Construction = 9,
-  Textile = 10,
-  Mixed = 11
+  Battery = 0,
+  BrownGlass = 1,
+  Clothes = 2,
+  Biological = 3,
+  GreenGlass = 4,
+  Paper = 5,
+  Trash = 6,
+  Shoes = 7,
+  WhiteGlass = 8,
+  Metal = 9,
+  Cardboard = 10,
+  Plastic = 11
 }
 
 export const REPORT_STATUS_LABELS: Record<number, string> = {
@@ -56,14 +58,16 @@ export const REPORT_STATUS_LABELS: Record<number, string> = {
 };
 
 export const WASTE_TYPE_LABELS: Record<number, string> = {
-  [WasteType.Unknown]: 'Unknown',
-  [WasteType.Plastic]: 'Plastic',
+  [WasteType.Battery]: 'Battery',
+  [WasteType.BrownGlass]: 'Brown Glass',
+  [WasteType.Clothes]: 'Clothes',
+  [WasteType.Biological]: 'Biological',
+  [WasteType.GreenGlass]: 'Green Glass',
   [WasteType.Paper]: 'Paper',
-  [WasteType.Glass]: 'Glass',
+  [WasteType.Trash]: 'Trash',
+  [WasteType.Shoes]: 'Shoes',
+  [WasteType.WhiteGlass]: 'White Glass',
   [WasteType.Metal]: 'Metal',
-  [WasteType.Organic]: 'Organic',
-  [WasteType.Electronic]: 'Electronic',
-  [WasteType.Construction]: 'Construction',
-  [WasteType.Textile]: 'Textile',
-  [WasteType.Mixed]: 'Mixed'
+  [WasteType.Cardboard]: 'Cardboard',
+  [WasteType.Plastic]: 'Plastic'
 };

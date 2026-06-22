@@ -75,10 +75,6 @@
           }
         </div>
 
-        <div class="flex justify-end">
-          <button type="button" class="text-sm text-primary hover:underline">Forgot password?</button>
-        </div>
-
         <button type="submit" [disabled]="isSubmitting"
           class="h-11 w-full rounded-md bg-primary text-primary-foreground text-base font-medium transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70">
           {{ isSubmitting ? 'Signing in...' : 'Sign In' }}
