@@ -13,7 +13,12 @@ const isAuthenticated = (): boolean => {
 
 const redirectToLogin = () => {
   const router = inject(Router);
-  return router.navigateByUrl('/login');
+  return router.parseUrl('/login');
+};
+
+const redirectToHome = () => {
+  const router = inject(Router);
+  return router.parseUrl('/dashboard/home');
 };
 
 export const authGuard: CanActivateFn = () => {
@@ -30,6 +35,14 @@ export const authChildGuard: CanActivateChildFn = () => {
   }
 
   return redirectToLogin();
+};
+
+export const guestGuard: CanActivateFn = () => {
+  if (!isAuthenticated()) {
+    return true;
+  }
+
+  return redirectToHome();
 };
 
 export const superAdminGuard: CanActivateFn = () => {
