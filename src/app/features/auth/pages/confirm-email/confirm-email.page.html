@@ -1,0 +1,62 @@
+<div class="min-h-screen flex bg-card text-foreground">
+  <section aria-hidden="true"
+    class="hidden lg:flex flex-1 bg-accent items-center justify-center p-12 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent"></div>
+
+    <div class="relative z-10 text-center max-w-lg">
+      <img src="assets/eco-login-illustration.jpg" alt="Eco-friendly city illustration"
+        class="w-full max-w-md mx-auto mb-8 rounded-2xl shadow-xl" />
+      <h2 class="text-2xl font-bold text-accent-foreground mb-2">Making cities cleaner, together</h2>
+      <p class="text-muted-foreground">
+        Yalla Khadra helps communities manage waste efficiently with smart reporting and real-time tracking.
+      </p>
+    </div>
+  </section>
+
+  <section class="flex-1 flex items-center justify-center p-8 bg-card">
+    <div class="w-full max-w-md animate-fade-in">
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-20 h-20 flex items-center justify-center overflow-hidden" aria-hidden="true">
+          <img src="assets/Images/logo.png" alt="Yalla Khadra Logo" class="w-full h-full object-contain" />
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold">Yalla Khadra</h1>
+          <p class="text-sm text-muted-foreground">Admin Dashboard</p>
+        </div>
+      </div>
+
+      <h2 class="text-xl font-semibold mb-1">Confirm your email</h2>
+      <p class="text-muted-foreground mb-8">Please enter the 6-digit code sent to {{ email }}</p>
+
+      <form [formGroup]="confirmForm" (ngSubmit)="onSubmit()" class="space-y-5" novalidate>
+        <div class="space-y-2">
+          <label for="code" class="text-sm font-medium">Confirmation Code</label>
+          <input id="code" type="text" formControlName="code" autocomplete="one-time-code"
+            placeholder="123456"
+            class="h-11 w-full rounded-md border border-input bg-background px-3 text-sm outline-none transition focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 text-center tracking-widest font-mono text-lg" maxlength="6" />
+          @if (shouldShowError('code')) {
+          <p class="text-xs text-red-600">Please enter a valid 6-digit code.</p>
+          }
+        </div>
+
+        <button type="submit" [disabled]="isSubmitting"
+          class="h-11 w-full rounded-md bg-primary text-primary-foreground text-base font-medium transition hover:brightness-105 disabled:cursor-not-allowed disabled:opacity-70">
+          {{ isSubmitting ? 'Confirming...' : 'Confirm Email' }}
+        </button>
+
+        <div class="text-center mt-4">
+          <button type="button" (click)="onResend()" [disabled]="isResending" class="text-sm text-primary hover:underline disabled:opacity-50 disabled:cursor-not-allowed disabled:no-underline">
+            {{ isResending ? 'Resending code...' : 'Didn\'t receive a code? Resend' }}
+          </button>
+        </div>
+      </form>
+      
+      <div class="mt-8 text-center">
+        <a routerLink="/login" class="text-sm text-muted-foreground hover:text-foreground inline-flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          Back to login
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

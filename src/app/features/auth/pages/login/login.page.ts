@@ -74,6 +74,11 @@ export class LoginPageComponent {
           void this.router.navigateByUrl('/dashboard/home');
         },
         error: (error: HttpErrorResponse) => {
+          const apiError = error.error as ApiResponse<unknown>;
+          if (apiError && apiError.errorCode === 'EmailNotConfirmed') {
+            void this.router.navigate(['/login/confirm-email'], { queryParams: { email } });
+            return;
+          }
           this.rejectLogin(this.getErrorMessageFromBackend(error));
         }
       });

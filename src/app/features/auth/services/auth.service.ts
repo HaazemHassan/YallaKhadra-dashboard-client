@@ -42,4 +42,18 @@ export class AuthService {
       { withCredentials: true }
     );
   }
+
+  requestEmailConfirmation(email: string) {
+    return this.http.post<ApiResponse<null>>(
+      `${environment.apiBaseUrl}/api/authentication/email-confirmation/request`,
+      { email }
+    );
+  }
+
+  confirmEmail(email: string, code: string) {
+    return this.http.post<ApiResponse<null>>(
+      `${environment.apiBaseUrl}/api/authentication/email-confirmation/confirm`,
+      { email, code }
+    );
+  }
 }
